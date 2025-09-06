@@ -27,6 +27,48 @@ def blankety(request: Request, payload: MissingDataInput):
 
     return JSONResponse(content=result, media_type="application/json")
 
+from pydantic import RootModel
+class SingleLatexInput(BaseModel):
+    name : str
+    formula : str
+    variables : Dict[str, float]
+    type : str
+class LatexInput(RootModel):
+    root: List[SingleLatexInput]
+from match_keys import *
+import sympy as sp
+from latex2sympy2 import latex2sympy, latex2latex
+@app.post("/trading-formula", status_code=status.HTTP_200_OK)
+def latex_to_result(request: Request, payload: LatexInput):
+    # Ensure the Content-Type header is application/json
+    content_type = request.headers.get("Content-type")
+    if content_type != "application/json":
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail="Unsupported Content-Type. Expected 'application/json'."
+        )
+    results = []
+    for single_latex in payload.root:
+        try:
+            formula = single_latex.formula
+            if '=' in formula:
+                _, formula = formula.split('=', 1)
+            formula = formula.strip()
+            obj = latex2sympy(formula)
+            tmp = [str(i) for i in list(obj.free_symbols)]
+
+            variables_changed = replace_keys_with_fuzzy_match(single_latex.variables, tmp)
+            obj = obj.subs(variables_changed)
+            output = float(obj.evalf())
+            
+        except Exception as e:
+            print(e)
+            output = None
+        results.append({
+            'result' : output
+        })
+    return JSONResponse(content=results, media_type="application/json")
+
 if __name__ == '__main__':
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
