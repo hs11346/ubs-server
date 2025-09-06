@@ -115,7 +115,7 @@ class Schedule(BaseModel):
     tasks: List[Task]
     subway: List[SubwayConnection]
     starting_station: int
-@app.post("/princess-diary", status_code=status.HTTP_200_OK)
+@app.post("/princess-diaries", status_code=status.HTTP_200_OK)
 def princess_diary(request: Request, payload: LatexInput):
     logging.info(str(payload))
 if __name__ == '__main__':
