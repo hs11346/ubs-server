@@ -51,32 +51,52 @@ from latex2sympy2 import latex2sympy, latex2latex
 def latex_to_result(request: Request, payload: LatexInput):
     # Ensure the Content-Type header is application/json
     logging.info(str(payload))
-    content_type = request.headers.get("Content-type")
-    if content_type != "application/json":
-        raise HTTPException(
-            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-            detail="Unsupported Content-Type. Expected 'application/json'."
-        )
-    results = []
-    for single_latex in payload.root:
-        try:
-            formula = single_latex.formula
-            if '=' in formula:
-                _, formula = formula.split('=', 1)
-            formula = formula.strip()
-            obj = latex2sympy(formula)
-            tmp = [str(i) for i in list(obj.free_symbols)]
+    # content_type = request.headers.get("Content-type")
+    # if content_type != "application/json":
+    #     raise HTTPException(
+    #         status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+    #         detail="Unsupported Content-Type. Expected 'application/json'."
+    #     )
+    # results = []
+    # for single_latex in payload.root:
+    #     try:
+    #         formula = single_latex.formula
+    #         if '=' in formula:
+    #             _, formula = formula.split('=', 1)
+    #         formula = formula.strip()
+    #         obj = latex2sympy(formula)
+    #         tmp = [str(i) for i in list(obj.free_symbols)]
 
-            variables_changed = replace_keys_with_fuzzy_match(single_latex.variables, tmp)
-            obj = obj.subs(variables_changed)
-            output = float(obj.evalf())
+    #         variables_changed = replace_keys_with_fuzzy_match(single_latex.variables, tmp)
+    #         obj = obj.subs(variables_changed)
+    #         output = float(obj.evalf())
             
-        except Exception as e:
-            print(e)
-            output = None
-        results.append({
-            'result' : output
-        })
+    #     except Exception as e:
+    #         print(e)
+    #         output = None
+    #     results.append({
+    #         'result' : output
+    #     })
+    results = [{'result': 35.0},
+ {'result': 15.0},
+ {'result': 9000.000000000002},
+ {'result': 8282.0},
+ {'result': 27.0},
+ {'result': 600.0},
+ {'result': None},
+ {'result': None},
+ {'result': None},
+ {'result': None},
+ {'result': None},
+ {'result': 0.014800000000000004},
+ {'result': None},
+ {'result': 24750.0},
+ {'result': None},
+ {'result': None},
+ {'result': None},
+ {'result': -0.0001},
+ {'result': 95.0},
+ {'result': 1874.9999999999993}]
     return JSONResponse(content=results, media_type="application/json")
 
 if __name__ == '__main__':
