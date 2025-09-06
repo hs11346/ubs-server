@@ -3,6 +3,15 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, conlist
 from typing import List, Dict
 import math
+import logging
+
+
+logging.basicConfig(
+    filename='app.log',
+    filemode='a',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 app = FastAPI()
 
@@ -41,6 +50,7 @@ from latex2sympy2 import latex2sympy, latex2latex
 @app.post("/trading-formula", status_code=status.HTTP_200_OK)
 def latex_to_result(request: Request, payload: LatexInput):
     # Ensure the Content-Type header is application/json
+    logging.info(str(payload))
     content_type = request.headers.get("Content-type")
     if content_type != "application/json":
         raise HTTPException(
