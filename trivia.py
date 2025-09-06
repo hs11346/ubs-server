@@ -108,7 +108,7 @@ class Task(BaseModel):
 
 class SubwayConnection(BaseModel):
     # Using a Tuple of exactly two integers for the connection
-    connection: List[int, int]
+    connection: List[int]
     fee: int
 
 class Schedule(BaseModel):
