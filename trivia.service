@@ -1,0 +1,13 @@
+[Unit]
+Description=/usr/local/app/ubs/trivia.py
+After=network.target
+[Service]
+User=root
+Group=root
+
+WorkingDirectory=/usr/local/app/ubs
+ExecStart=/usr/local/app/ubs/venv/bin/python3.12 /usr/local/app/ubs//usr/local/app/ubs/trivia.py
+Restart=always
+Environment=PYTHONUNBUFFERED=1
+[Install]
+WantedBy=multi-user.target
