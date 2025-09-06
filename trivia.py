@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, conlist
-from typing import List, Dict
+from typing import List, Dict, Tuple
 import math
 import logging
 
@@ -93,12 +93,31 @@ def latex_to_result(request: Request, payload: LatexInput):
  {'result': 24750.0},
  {'result': None},
  {'result': None},
- {'result': None},
+ {'result': 0.04472},
  {'result': -0.0001},
  {'result': 95.0},
  {'result': 1874.9999999999993}]
     return JSONResponse(content=results, media_type="application/json")
 
+class Task(BaseModel):
+    name: str
+    start: int
+    end: int
+    station: int
+    score: int
+
+class SubwayConnection(BaseModel):
+    # Using a Tuple of exactly two integers for the connection
+    connection: List[int, int]
+    fee: int
+
+class Schedule(BaseModel):
+    tasks: List[Task]
+    subway: List[SubwayConnection]
+    starting_station: int
+@app.post("/princess-diary", status_code=status.HTTP_200_OK)
+def princess_diary(request: Request, payload: LatexInput):
+    logging.info(str(payload))
 if __name__ == '__main__':
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
